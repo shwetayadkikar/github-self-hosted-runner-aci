@@ -86,8 +86,8 @@ jobs:
             --resource-group myResourceGroup \
             --image mycontainerregistry/githubrunner:${{ github.run_id }} \
             --registry-login-server mycontainerregistry \
-            --registry-username ${{ var.SPN_APP_ID }} \
-            --registry-password ${{ github.SPN_SECRET }} \
+            --registry-username ${{ secrets.SPN_APP_ID }} \
+            --registry-password ${{ secrets.SPN_SECRET }} \
             --dns-name-label github-runner-demo-$RANDOM \
             --query ipAddress.fqdn
             --subnet aci-subnet-1
