@@ -52,12 +52,11 @@ jobs:
         id: deploy-acr
         env:
           location: 'NorthEurope'
-        with:
-          location: ${{ var.location }}          
+        with:              
           azcliversion: 2.30.0
           inlineScript: |
             az account show
-            az group create --name myResourceGroup --location eastus
+            az group create --name myResourceGroup --location northeurope
             az acr create --resource-group myResourceGroup --name mycontainerregistry --sku Basic
             az acr login --name mycontainerregistry
 
