@@ -1,0 +1,36 @@
+
+  cleanup-registered-runners-dev:
+    name: Cleanup Runners
+    needs: [validate]
+    runs-on: ubuntu-latest
+    environment:
+      name: DEV
+    steps:
+      - name: Get GitHub App token
+        id: github-app
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{ secrets.GH_APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Get Runners IDs
+        run: |
+          echo "ORG_RUNNER_IDs=$(gh api /orgs/sede-x/actions/runners --paginate | jq -r '[.runners[] |  select(.name | startswith("github-runner-demo")) | .id] | @csv')" >> "$GITHUB_OUTPUT"
+         
+        id: get_runner_ids
+        env:
+          GH_TOKEN: ${{ steps.github-app.outputs.token }}
+
+      - name: De-Register the runners
+        run: |       
+          IFS=',' read -ra org_runners <<< "${{ env.ORG_RUNNER_IDs }}"
+          echo "Removing org runners.."
+          for org_runner in "${org_runners[@]}"
+          do
+            echo "Removing $org_runner"
+             gh api orgs/sede-x/actions/runners/${org_runner} -X DELETE
+          done
+        env:
+          REPO_RUNNER_IDs: ${{ env.REPO_RUNNER_IDs }}
+          ORG_RUNNER_IDs: ${{ steps.get_runner_ids.outputs.ORG_RUNNER_IDs }}
+          GH_TOKEN: ${{ steps.github-app.outputs.token  }}
