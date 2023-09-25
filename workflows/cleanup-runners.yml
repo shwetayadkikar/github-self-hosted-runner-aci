@@ -30,7 +30,6 @@
             echo "Removing $org_runner"
              gh api orgs/sede-x/actions/runners/${org_runner} -X DELETE
           done
-        env:
-          REPO_RUNNER_IDs: ${{ env.REPO_RUNNER_IDs }}
+        env:     
           ORG_RUNNER_IDs: ${{ steps.get_runner_ids.outputs.ORG_RUNNER_IDs }}
           GH_TOKEN: ${{ steps.github-app.outputs.token  }}
