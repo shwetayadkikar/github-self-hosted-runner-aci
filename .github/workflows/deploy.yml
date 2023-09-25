@@ -56,9 +56,9 @@ jobs:
           azcliversion: 2.30.0
           inlineScript: |
             az account show
-            az group create --name myResourceGroup --location northeurope
-            az acr create --resource-group myResourceGroup --name mycontainerregistry --sku Basic
-            az acr login --name mycontainerregistry
+            az group create --name acirunnerdemorg --location northeurope
+            az acr create --resource-group acirunnerdemorg --name acirunnerdemoreg --sku Basic
+            az acr login --name acirunnerdemoreg
 
             az network vnet create \
             --name aci-vnet-1 \
@@ -71,26 +71,28 @@ jobs:
       - name: Build and Upload Docker Image
         id: build_and_upload_docker_image        
         run: |          
-          docker build ${{ github.workspace }} -t mycontainerregistry/githubrunner:${{ github.run_id }}
-          docker push mycontainerregistry/githubrunner:${{ github.run_id }}
+          docker build ${{ github.workspace }} -t acirunnerdemoreg/githubrunner:${{ github.run_id }}
+          docker push acirunnerdemoreg/githubrunner:${{ github.run_id }}
 
       - name: Create Azure Container Instaces
-        uses: azure/powershell@v1
+        uses: azure/CLI@v1
         id: create_aci
         # env:
         #   clientSecret: ${{ secrets.CLIENT_SECRET }}
         with:
           inlineScript: |
+            
             az container create \
             --name github-runner-demo \
-            --resource-group myResourceGroup \
-            --image mycontainerregistry/githubrunner:${{ github.run_id }} \
-            --registry-login-server mycontainerregistry \
+            --resource-group acirunnerdemorg \
+            --image acirunnerdemoreg/githubrunner:${{ github.run_id }} \
+            --registry-login-server acirunnerdemoreg \
             --registry-username ${{ secrets.SPN_APP_ID }} \
             --registry-password ${{ secrets.SPN_SECRET }} \
             --dns-name-label github-runner-demo-$RANDOM \
-            --query ipAddress.fqdn
-            --subnet aci-subnet-1
-            --subnet-address-prefix 10.0.0.0/24
-            --vnet aci-vnet-1
-            --vnet-address-prefix 10.0.0.0/16
+            --query ipAddress.fqdn \
+            --subnet aci-subnet-1 \
+            --subnet-address-prefix 10.0.0.0/24 \
+            --vnet aci-vnet-1 \
+            --vnet-address-prefix 10.0.0.0/16 \
+            --environment-variables 'GH_APP_ID'='${{ secrets.GH_APP_ID }}' 'GH_PRIVATE_KEY'='${{ secrets.GH_APP_ID }}' 'GH_APP_INSTALLATION_ID'='42193455' 'RUNNER_ORGANIZATION_URL'='https://github.com/shwetayadkikar 'RUNNER_NAME'='github-runner-demo-$RANDOM'
