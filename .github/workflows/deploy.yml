@@ -58,7 +58,7 @@ jobs:
             az account show
             az group create --name acirunnerdemorg --location northeurope
             az acr create --resource-group acirunnerdemorg --name acirunnerdemoreg --sku Basic
-            az acr login --name acirunnerdemoreg
+            
 
             az network vnet create \
             --name aci-vnet-1 \
