@@ -44,8 +44,7 @@ jobs:
         with:
           client-id: ${{ secrets.SPN_APP_ID }}
           tenant-id: ${{ secrets.TENANTID }}
-          subscription-id: ${{ secrets.SUBSCRIPTIONID }}
-          clientSecret: ${{ secrets.SPN_SECRET }}
+          subscription-id: ${{ secrets.SUBSCRIPTIONID }}        
           enable-AzPSSession: true
 
       - name : Deploy ACR and Virtual Network
