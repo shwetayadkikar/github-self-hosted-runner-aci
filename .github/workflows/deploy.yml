@@ -26,10 +26,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    defaults:
-      run:
-        working-directory: s
+   
     steps:
+      - uses: actions/checkout@v2
 
       - name: GitHub App Token Generation
         id: my-app
