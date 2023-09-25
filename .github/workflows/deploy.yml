@@ -26,7 +26,9 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-   
+    defaults:
+      run:
+        working-directory: s
     steps:
       - uses: actions/checkout@v2
 
@@ -69,7 +71,7 @@ jobs:
       - name: Build and Upload Docker Image
         id: build_and_upload_docker_image        
         run: |          
-          docker build ${{ github.workspace }} -t acirunnerdemoreg/githubrunner:${{ github.run_id }}
+          docker build s -t acirunnerdemoreg/githubrunner:${{ github.run_id }}
           docker push acirunnerdemoreg/githubrunner:${{ github.run_id }}
 
       - name: Create Azure Container Instaces
