@@ -107,13 +107,13 @@ RUN wget -progress=bar:force -q -O sqlpackage.zip \
             && rm sqlpackage.zip
 
 # add over the start.sh script
-ADD scripts/start.sh start.sh
+ADD start.sh start.sh
 
 # make the script executable
 RUN chmod +x start.sh
 
 # add over the start.sh script
-ADD scripts/generateJWT.py generateJWT.py
+ADD generateJWT.py generateJWT.py
 
 RUN chmod +x generateJWT.py
 

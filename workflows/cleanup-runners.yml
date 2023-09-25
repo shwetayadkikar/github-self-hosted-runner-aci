@@ -1,7 +1,6 @@
 
   cleanup-registered-runners-dev:
-    name: Cleanup Runners
-    needs: [validate]
+    name: Cleanup Runners    
     runs-on: ubuntu-latest
     environment:
       name: DEV

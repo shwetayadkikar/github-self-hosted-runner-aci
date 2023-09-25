@@ -1,0 +1,97 @@
+name: 'Deploy ACR and ACI to create self-hosted GitHub Runners'
+on:
+  workflow_call:
+    inputs:
+      environment:
+        default: DEV
+        required: true
+        type: string      
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: DEV
+        type: choice
+        options:
+          - DEV
+          - TST
+          - PROD
+defaults:
+  run:
+    working-directory: s
+permissions:
+    id-token: write
+    contents: read 
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: s
+    steps:
+
+      - name: GitHub App Token Generation
+        id: my-app
+        uses: getsentry/action-github-app-token@v2
+        with:
+          app_id: ${{secrets.GH_APP_ID}}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+ 
+          
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ var.Application_ID }}
+          tenant-id: ${{ var.TenantId }}
+          subscription-id: ${{ var.SubscriptionId }}
+          enable-AzPSSession: true
+
+      - name : Deploy ACR and Virtual Network
+        uses: azure/CLI@v1
+        id: deploy-acr
+        env:
+          location: 'NorthEurope'
+        with:
+          location: ${{ var.location }}          
+          azcliversion: 2.30.0
+          inlineScript: |
+            az account show
+            az group create --name myResourceGroup --location eastus
+            az acr create --resource-group myResourceGroup --name mycontainerregistry --sku Basic
+            az acr login --name mycontainerregistry
+
+            az network vnet create \
+            --name aci-vnet-1 \
+            --resource-group test-rg \
+            --address-prefix 10.0.0.0/16 \
+            --subnet-name aci-subnet-1 \
+            --subnet-prefixes 10.0.0.0/24
+
+
+      - name: Build and Upload Docker Image
+        id: build_and_upload_docker_image        
+        run: |          
+          docker build ${{ github.workspace }} -t mycontainerregistry/githubrunner:${{ github.run_id }}
+          docker push mycontainerregistry/githubrunner:${{ github.run_id }}
+
+      - name: Create Azure Container Instaces
+        uses: azure/powershell@v1
+        id: create_aci
+        # env:
+        #   clientSecret: ${{ secrets.CLIENT_SECRET }}
+        with:
+          inlineScript: |
+            az container create \
+            --name github-runner-demo \
+            --resource-group myResourceGroup \
+            --image mycontainerregistry/githubrunner:${{ github.run_id }} \
+            --registry-login-server mycontainerregistry \
+            --registry-username ${{ var.SPN_APP_ID }} \
+            --registry-password ${{ github.SPN_SECRET }} \
+            --dns-name-label github-runner-demo-$RANDOM \
+            --query ipAddress.fqdn
+            --subnet aci-subnet-1
+            --subnet-address-prefix 10.0.0.0/24
+            --vnet aci-vnet-1
+            --vnet-address-prefix 10.0.0.0/16
