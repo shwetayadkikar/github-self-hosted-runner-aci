@@ -59,10 +59,9 @@ jobs:
             az group create --name acirunnerdemorg --location northeurope
             az acr create --resource-group acirunnerdemorg --name acirunnerdemoreg --sku Basic
             
-
             az network vnet create \
             --name aci-vnet-1 \
-            --resource-group test-rg \
+            --resource-group acirunnerdemorg \
             --address-prefix 10.0.0.0/16 \
             --subnet-name aci-subnet-1 \
             --subnet-prefixes 10.0.0.0/24
