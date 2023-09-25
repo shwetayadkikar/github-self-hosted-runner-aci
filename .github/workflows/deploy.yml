@@ -36,15 +36,15 @@ jobs:
         uses: getsentry/action-github-app-token@v2
         with:
           app_id: ${{secrets.GH_APP_ID}}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          private_key: ${{ secrets.GH_APP_KEY }}
  
           
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ var.Application_ID }}
-          tenant-id: ${{ var.TenantId }}
-          subscription-id: ${{ var.SubscriptionId }}
+          client-id: ${{ secrets.SPN_APP_ID }}
+          tenant-id: ${{ secrets.TENANTID }}
+          subscription-id: ${{ secrets.SUBSCRIPTIONID }}
           enable-AzPSSession: true
 
       - name : Deploy ACR and Virtual Network
