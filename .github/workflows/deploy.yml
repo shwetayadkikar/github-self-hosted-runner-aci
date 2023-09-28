@@ -66,6 +66,7 @@ jobs:
     name: Build docker image and upload
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    needs: [deploy-acr-vnet]
  
     steps:
       - uses: actions/checkout@v2
@@ -103,6 +104,7 @@ jobs:
     name: Deploy ACI
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    needs: [build-docker-image-upload]
  
     steps:
       - uses: actions/checkout@v2
