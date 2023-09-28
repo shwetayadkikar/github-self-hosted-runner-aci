@@ -53,7 +53,7 @@ jobs:
           inlineScript: |
             az account show
             az group create --name acirunnerdemorg --location northeurope
-            az acr create --resource-group acirunnerdemorg --name acirunnerdemoreg --sku Basic
+            az acr create --resource-group acirunnerdemorg --name acirunnerdemoreg.azurecr.io --sku Basic
             
             az network vnet create \
             --name aci-vnet-1 \
@@ -90,15 +90,15 @@ jobs:
       - name: Docker Login
         uses: azure/docker-login@v1
         with:
-          login-server: acirunnerdemoreg
+          login-server: acirunnerdemoreg.azurecr.io
           username: ${{ secrets.SPN_APP_ID }}
           password:  ${{ secrets.SPN_SECRET }}
 
       - name: Build and Upload Docker Image
         id: build_and_upload_docker_image        
         run: |          
-          docker build ${{ github.workspace }}/GitHubRunner -t acirunnerdemoreg/githubrunner:${{ github.run_id }}
-          docker push acirunnerdemoreg/githubrunner:${{ github.run_id }}     
+          docker build ${{ github.workspace }}/GitHubRunner -t acirunnerdemoreg.azurecr.io/githubrunner:${{ github.run_id }}
+          docker push acirunnerdemoreg.azurecr.io/githubrunner:${{ github.run_id }}     
 
   deploy-aci:
     name: Deploy ACI
@@ -136,8 +136,8 @@ jobs:
             az container create \
             --name github-runner-demo \
             --resource-group acirunnerdemorg \
-            --image acirunnerdemoreg/githubrunner:${{ github.run_id }} \
-            --registry-login-server acirunnerdemoreg \
+            --image acirunnerdemoreg.azurecr.io/githubrunner:${{ github.run_id }} \
+            --registry-login-server acirunnerdemoreg.azurecr.io \
             --registry-username ${{ secrets.SPN_APP_ID }} \
             --registry-password ${{ secrets.SPN_SECRET }} \
             --dns-name-label github-runner-demo-$RANDOM \
