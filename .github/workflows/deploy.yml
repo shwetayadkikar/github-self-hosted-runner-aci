@@ -62,7 +62,7 @@ jobs:
             --subnet-name aci-subnet-1 \
             --subnet-prefixes 10.0.0.0/24
 
- build-docker-image-upload:
+  build-docker-image-upload:
     name: Build docker image and upload
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -99,7 +99,7 @@ jobs:
           docker build ${{ github.workspace }}/GitHubRunner -t acirunnerdemoreg/githubrunner:${{ github.run_id }}
           docker push acirunnerdemoreg/githubrunner:${{ github.run_id }}     
 
- deploy-aci:
+  deploy-aci:
     name: Deploy ACI
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
@@ -144,8 +144,4 @@ jobs:
             --subnet-address-prefix 10.0.0.0/24 \
             --vnet aci-vnet-1 \
             --vnet-address-prefix 10.0.0.0/16 \
-            --environment-variables 'GH_APP_ID'='${{ secrets.GH_APP_ID }}' 
-            'GH_PRIVATE_KEY'='${{ secrets.GH_APP_ID }}' 
-            'GH_APP_INSTALLATION_ID'='42193455'
-             'RUNNER_ORGANIZATION_URL'='https://github.com/shwetayadkikar 
-             'RUNNER_NAME'='github-runner-demo-$RANDOM'
+            --environment-variables 'GH_APP_ID'='${{ secrets.GH_APP_ID }}' 'GH_PRIVATE_KEY'='${{ secrets.GH_APP_ID }}' 'GH_APP_INSTALLATION_ID'='42193455' 'RUNNER_ORGANIZATION_URL'='https://github.com/shwetayadkikar' 'RUNNER_NAME'='github-runner-demo-$RANDOM'
