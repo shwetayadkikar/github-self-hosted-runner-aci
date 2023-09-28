@@ -38,7 +38,7 @@ payload = {
 # Create JWT
 encoded_jwt = jwt.encode(payload, signing_key, algorithm="RS256")
 
-#34416179
+
 url = 'https://api.github.com/app/installations/'+ installation_id +'/access_tokens'
 
 token_header = "bearer "+encoded_jwt
