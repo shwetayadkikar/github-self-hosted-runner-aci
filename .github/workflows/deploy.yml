@@ -5,6 +5,18 @@ on:
       environment:
         default: DEV
         required: true
+        type: string    
+      input1:
+        default: DEV
+        required: true
+        type: string      
+      input2:
+        default: DEV
+        required: true
+        type: string      
+      input3:
+        default: DEV
+        required: true
         type: string      
   workflow_dispatch:
     inputs:
